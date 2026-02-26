@@ -1,67 +1,73 @@
 # Slingshot Dev Intelligence
 
-Slingshot Dev Intelligence is a real-time VS Code extension that observes developer coding behavior and generates contextual insights directly inside the editor. Unlike traditional AI assistants that focus only on code completion, this system analyzes coding activity patterns, file modifications, and behavioral trends to provide proactive development intelligence without interrupting workflow.
+What if your code editor could understand not just what you write — but how you write it?
 
-## Overview
+Slingshot Dev Intelligence is a real-time VS Code extension that analyzes developer behavior, coding patterns, and modification trends to generate contextual insights directly inside the editor. Instead of reacting after errors occur, it surfaces intelligent observations during development.
 
-Modern development tools are largely reactive. They highlight errors after compilation, suggest code completions, or depend heavily on explicit prompts. This project introduces a context-aware intelligence layer that continuously monitors development activity, interprets behavioral signals, and delivers structured insights in real time.
+This project introduces a proactive development intelligence layer beyond traditional code assistants.
 
-The system tracks file edits, addition and deletion patterns, coding frequency, and structural modification trends. These signals are analyzed to generate meaningful feedback through an integrated VS Code webview dashboard.
+## Why This Matters
 
-## Problem Statement
+Modern tools focus on code completion and syntax validation. They do not understand developer behavior, coding rhythm, or structural modification patterns.
 
-Developers frequently introduce repetitive structural changes, unnoticed inefficiencies, and avoidable inconsistencies during development. Productivity flow can degrade without visibility into behavioral patterns. Existing tools do not provide insight into how development activity evolves over time. This project addresses that gap by transforming raw coding activity into actionable intelligence.
+Developers often:
+- Repeatedly refactor the same logic
+- Introduce avoidable inconsistencies
+- Enter inefficient modification loops
+- Lose productivity momentum without realizing it
 
-## Solution Approach
+Slingshot Dev Intelligence transforms raw coding activity into actionable signals.
 
-The extension captures real-time file system events within VS Code and processes them through a modular analysis pipeline. Behavioral signals are interpreted to detect patterns such as rapid modification cycles, heavy deletion streaks, repeated edits in specific modules, and development intensity trends. The system then generates contextual insights and presents them through a clean webview interface.
+## How It Works
 
-An optional FastAPI backend extends the architecture by enabling structured profile generation, scalable analytics processing, and future-ready expansion toward team-level insights.
+The extension continuously monitors real-time file activity inside VS Code. Every addition, deletion, and modification is captured and passed through a modular analysis pipeline.
 
-## Core Features
+The system:
+- Tracks behavioral signals
+- Identifies modification patterns
+- Detects structural edit trends
+- Generates contextual feedback
+- Displays insights inside an integrated webview dashboard
 
-- Real-time file activity tracking  
-- Behavioral pattern analysis engine  
-- Developer activity profile generation  
-- Integrated VS Code webview dashboard  
-- Lightweight and non-intrusive execution  
-- Modular and extensible architecture  
+An optional FastAPI backend supports scalable analytics and structured developer profiling.
+
+## Core Capabilities
+
+- Real-time behavioral tracking  
+- Pattern-based code activity analysis  
+- Developer insight generation  
+- Integrated in-editor dashboard  
+- Modular and extensible system design  
+- Lightweight, non-intrusive execution  
 
 ## Architecture
 
 VS Code Extension  
-→ Tracker Module (captures file events)  
-→ Analyzer Engine (interprets behavioral signals)  
-→ Profile Generator (creates structured insights)  
-→ Webview Panel (renders feedback inside the editor)  
-Optional: FastAPI Backend for extended analytics and scalability  
+→ Tracker Module  
+→ Analyzer Engine  
+→ Profile Generator  
+→ Webview Dashboard  
+
+Optional Backend  
+→ FastAPI-based analytics layer  
 
 ## Tech Stack
 
 TypeScript  
 VS Code Extension API  
 FastAPI (Python)  
-HTML, CSS, JavaScript (Webview UI)  
-
-## Project Structure
-
-src/  
-├── extension.ts  
-├── tracker.ts  
-├── analyzer.ts  
-├── profileGenerator.ts  
-└── webview.ts  
+HTML, CSS, JavaScript  
 
 ## Installation
 
 1. Clone the repository  
 2. Run `npm install`  
-3. Open the project in VS Code  
+3. Open in VS Code  
 4. Press `F5` to launch the Extension Development Host  
 
 ## Demo
 
-Demo video link: [Add Your Video Link Here]
+Demo Video: 
 
 ## Team
 
@@ -69,8 +75,10 @@ Devika Polavarapu
 Team Lead  
 puppy567567@gmail.com  
 
-Built as part of the AMD Slingshot Hackathon.
+Built for the AMD Slingshot Hackathon.
 
 ## Vision
 
-This prototype lays the foundation for a scalable, context-aware development intelligence platform that enhances productivity, identifies behavioral trends early, and augments engineering workflows beyond traditional code assistants. The long-term direction includes advanced analytics, team-level intelligence dashboards, and deeper integration into development ecosystems.
+This prototype represents the foundation of a context-aware engineering intelligence platform. The long-term direction includes deeper behavioral analytics, team-level productivity intelligence, and integration into modern development ecosystems.
+
+The goal is simple: elevate development from reactive tooling to intelligent, insight-driven workflows.
