@@ -2,7 +2,7 @@
   "name": "cognitive-signature-extension",
   "displayName": "cognitive-signature-extension",
   "description": "AI-powered developer cognitive profiling extension",
-  "version": "0.0.1",
+  "version": "0.0.12",
   "engines": {
     "vscode": "^1.109.0"
   },
