@@ -1,22 +1,13 @@
 export function analyze(data: any) {
 
-    const focusScore =
-        data.fileSwitches > 10 ? 20 :
-        data.fileSwitches > 5 ? 50 :
-        80;
+    const typingSpeed = Number(data.typingSpeed) || 0;
+    const focusScore = Number(data.focusScore) || 0;
+    const burnoutRisk = data.burnoutRisk || "Low";
 
-    const burnoutRisk =
-        focusScore < 30 ? "High" :
-        focusScore < 60 ? "Moderate" :
-        "Low";
-
-    const typingSpeed = data.typingSpeed;
-
-    // 🔥 Composite Cognitive Stability Index (0–100)
+    // Stability formula (balanced)
     const stabilityIndex = Math.round(
         (focusScore * 0.6) +
-        (Math.min(typingSpeed, 120) / 120) * 30 +
-        (burnoutRisk === "Low" ? 10 : burnoutRisk === "Moderate" ? 5 : 0)
+        (Math.min(typingSpeed, 200) / 200) * 40
     );
 
     return {
