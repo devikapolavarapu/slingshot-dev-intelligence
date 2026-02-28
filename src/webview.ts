@@ -31,7 +31,9 @@ function getHtml(): string {
     <!DOCTYPE html>
     <html>
     <head>
+        <meta charset="UTF-8">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <style>
             body {
                 background:#1e1e1e;
@@ -46,7 +48,7 @@ function getHtml(): string {
 
             .glow {
                 color: orange;
-                text-shadow: 0 0 10px orange;
+                text-shadow: 0 0 12px orange;
             }
 
             .section {
@@ -59,6 +61,7 @@ function getHtml(): string {
                 background: #444;
                 border-radius: 10px;
                 margin-top: 10px;
+                overflow: hidden;
             }
 
             .bar-fill {
@@ -66,7 +69,7 @@ function getHtml(): string {
                 width: 0%;
                 background: green;
                 border-radius: 10px;
-                transition: width 0.5s ease;
+                transition: width 0.6s ease;
             }
 
             footer {
@@ -122,20 +125,34 @@ function getHtml(): string {
                         {
                             label: 'Focus Score',
                             data: [],
-                            borderColor: 'yellow'
+                            borderColor: 'yellow',
+                            borderWidth: 2,
+                            tension: 0.3
                         },
                         {
                             label: 'Typing Speed',
                             data: [],
-                            borderColor: 'cyan'
+                            borderColor: 'cyan',
+                            borderWidth: 2,
+                            tension: 0.3
                         }
                     ]
                 },
                 options: {
                     responsive: true,
+                    animation: { duration: 500 },
                     scales: {
                         x: { ticks: { color: "white" }},
-                        y: { ticks: { color: "white" }}
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 200,
+                            ticks: { color: "white" }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: "white" }
+                        }
                     }
                 }
             });
@@ -144,42 +161,53 @@ function getHtml(): string {
 
                 const data = event.data;
 
-                document.getElementById('typing').textContent = data.typingSpeed.toFixed(2);
-                document.getElementById('focus').textContent = data.focus;
-                document.getElementById('profileTitle').textContent = data.title;
-                document.getElementById('insight').textContent = data.insight;
-                document.getElementById('stability').textContent = data.stability;
+                // 🛑 CRASH PROTECTION
+                if (!data || data.typingSpeed == null) {
+                    console.log("Invalid payload received:", data);
+                    return;
+                }
+
+                console.log("Incoming:", data);
+
+                // Safe numeric conversion
+                const typingSpeed = Number(data.typingSpeed) || 0;
+                const focus = Number(data.focus) || 0;
+                const stability = Number(data.stability) || 0;
+
+                document.getElementById('typing').textContent = typingSpeed.toFixed(2);
+                document.getElementById('focus').textContent = focus;
+                document.getElementById('profileTitle').textContent = data.title || "Analyzing...";
+                document.getElementById('insight').textContent = data.insight || "";
+                document.getElementById('stability').textContent = stability;
 
                 const burnout =
-                    data.focus < 30 ? "High"
-                    : data.focus < 60 ? "Moderate"
+                    focus < 30 ? "High"
+                    : focus < 60 ? "Moderate"
                     : "Low";
 
                 document.getElementById('burnout').textContent = burnout;
 
-                // Stability bar
                 const bar = document.getElementById('stabilityBar');
-                bar.style.width = data.stability + "%";
+                bar.style.width = stability + "%";
 
-                if (data.stability > 75) {
+                if (stability > 75) {
                     bar.style.background = "green";
-                } else if (data.stability > 40) {
+                } else if (stability > 40) {
                     bar.style.background = "orange";
                 } else {
                     bar.style.background = "red";
                 }
 
-                // Glow effect for deep focus
-                if (data.focus > 75 && data.typingSpeed > 100) {
+                if (focus > 75 && typingSpeed > 120) {
                     titleEl.classList.add('glow');
                     setTimeout(() => {
                         titleEl.classList.remove('glow');
-                    }, 5000);
+                    }, 3000);
                 }
 
                 chart.data.labels.push('');
-                chart.data.datasets[0].data.push(data.focus);
-                chart.data.datasets[1].data.push(data.typingSpeed);
+                chart.data.datasets[0].data.push(focus);
+                chart.data.datasets[1].data.push(typingSpeed);
 
                 if (chart.data.labels.length > 20) {
                     chart.data.labels.shift();
