@@ -8,10 +8,16 @@ let tracker: Tracker;
 let interval: NodeJS.Timeout;
 let lastState: string = "";
 
-// 🔥 Flow + Session Tracking
-let deepFocusStart: number | null = null;
-let maxDeepFocusDuration: number = 0;
+// =============================
+// 🧠 Flow State Tracking
+// =============================
+let flowStart: number | null = null;
+let maxFlowDuration: number = 0;
+const FLOW_THRESHOLD = 30000; // 30 seconds sustained flow
 
+// =============================
+// 📊 Session Tracking
+// =============================
 let sessionStart: number = Date.now();
 let totalFocusScore: number = 0;
 let intervalCount: number = 0;
@@ -19,6 +25,8 @@ let burnoutCount: number = 0;
 let peakTypingSpeed: number = 0;
 
 export function activate(context: vscode.ExtensionContext) {
+
+    console.log("COGNITIVE EXTENSION ACTIVATED");
 
     tracker = new Tracker();
     tracker.startTracking(context);
@@ -49,30 +57,47 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         // =============================
-        // 🔥 Deep Work Detection
+        // 🧠 FLOW STATE DETECTION
         // =============================
 
-        if (analyzed.focusScore > 75 && analyzed.typingSpeed > 80) {
+        const isFlowCandidate =
+            analyzed.focusScore > 75 &&
+            analyzed.typingSpeed >= 80 &&
+            analyzed.typingSpeed <= 160 &&
+            rawData.isFocused;
 
-            if (!deepFocusStart) {
-                deepFocusStart = now;
+        if (isFlowCandidate) {
+
+            if (!flowStart) {
+                flowStart = now;
             }
 
-            const duration = now - deepFocusStart;
+            const duration = now - flowStart;
 
-            if (duration > maxDeepFocusDuration) {
-                maxDeepFocusDuration = duration;
+            if (duration > maxFlowDuration) {
+                maxFlowDuration = duration;
             }
 
-            if (duration > 120000) { // 2 minutes
-                vscode.window.showInformationMessage(
-                    `🔥 Deep Work maintained for ${(duration / 60000).toFixed(2)} minutes`
+            if (duration >= FLOW_THRESHOLD) {
+
+                vscode.window.setStatusBarMessage(
+                    `🧠 FLOW STATE ACTIVE (${(duration / 1000).toFixed(0)}s)`,
+                    5000
                 );
-                deepFocusStart = null;
+
+                flowStart = null; // reset after confirmation
             }
 
         } else {
-            deepFocusStart = null;
+            flowStart = null;
+        }
+
+        // =============================
+        // 🔥 Deep Work Detection (Legacy)
+        // =============================
+
+        if (analyzed.focusScore > 75 && analyzed.typingSpeed > 100) {
+            vscode.window.setStatusBarMessage("🔥 Deep Focus Mode", 3000);
         }
 
         // =============================
@@ -89,7 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
         });
 
         // =============================
-        // 🤖 Smart AI State Engine
+        // 🤖 Smart State Engine
         // =============================
 
         let currentState = "";
@@ -97,7 +122,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (analyzed.burnoutRisk === "High") {
             currentState = "burnout";
         }
-        else if (analyzed.focusScore > 75 && analyzed.typingSpeed > 100) {
+        else if (analyzed.focusScore > 75 && analyzed.typingSpeed > 120) {
             currentState = "deepFocus";
         }
         else if (analyzed.focusScore < 40 && analyzed.typingSpeed < 40) {
@@ -141,8 +166,9 @@ export function activate(context: vscode.ExtensionContext) {
                     break;
 
                 case "normal":
-                    vscode.window.showInformationMessage(
-                        "✅ Workflow stabilized."
+                    vscode.window.setStatusBarMessage(
+                        "✅ Workflow stabilized.",
+                        3000
                     );
                     break;
             }
@@ -154,26 +180,25 @@ export function activate(context: vscode.ExtensionContext) {
 
         const sessionDuration = now - sessionStart;
 
-        if (sessionDuration > 600000) { // 10 minutes
+        if (sessionDuration > 600000) {
 
             const avgFocus = Math.round(totalFocusScore / intervalCount);
 
             vscode.window.showInformationMessage(
-                `📊 Session Summary:
-                
+                `📊 Session Summary
+
 Avg Focus: ${avgFocus}
-Peak Typing Speed: ${peakTypingSpeed.toFixed(2)}
+Peak Typing Speed: ${peakTypingSpeed}
 Burnout Events: ${burnoutCount}
-Longest Deep Work: ${(maxDeepFocusDuration / 60000).toFixed(2)} mins`
+Longest Flow Duration: ${(maxFlowDuration / 60000).toFixed(2)} mins`
             );
 
-            // Reset metrics
             sessionStart = now;
             totalFocusScore = 0;
             intervalCount = 0;
             burnoutCount = 0;
             peakTypingSpeed = 0;
-            maxDeepFocusDuration = 0;
+            maxFlowDuration = 0;
         }
 
     }, 5000);
